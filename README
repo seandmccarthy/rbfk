@@ -1,0 +1,11 @@
+Brainfuck, in Ruby.
+
+Usage:
+
+rbfk.rb <brainfuck source file>
+
+OR
+
+echo '++++++[>++++++++++<-]+++++.' | rbfk.rb
+
+although piping in a script that uses the "," operation won't work.
