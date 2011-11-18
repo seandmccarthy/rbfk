@@ -9,3 +9,5 @@ OR
 echo '++++++[>++++++++++<-]+++++.' | rbfk.rb
 
 although piping in a script that uses the "," operation won't work.
+
+Also supports Ook! scripts.
