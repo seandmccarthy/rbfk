@@ -1,20 +1,22 @@
 Brainfuck, in Ruby.
 
+(http://en.wikipedia.org/wiki/Brainfuck)
+
 Usage:
 
-rbfk.rb <brainfuck source file>
+./bin/rbfk.rb <brainfuck source file>
 
 OR
 
-echo '++++++[>++++++++++<-]+++++.' | rbfk.rb
+echo '++++++[>++++++++++<-]+++++.' | ./bin/rbfk.rb
 
 although piping in a script that uses the "," operation won't work.
 
-Also supports Ook! scripts.
+Also supports Ook! and Spoon scripts.
 
 You can use the BrainFuck class in your own programs (why?) like so:
 
-require '/path/to/rbfk.rb'
+require '/path/to/lib/BrainFuck.rb'
 
 program = File.open('test.bf', 'r')
 #

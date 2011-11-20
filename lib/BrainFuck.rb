@@ -14,6 +14,30 @@ class BrainFuck
       'Ook? Ook!' => ']',
       'Ook! Ook.' => '.',
       'Ook. Ook!' => ','
+    },
+    :spoon => {
+      1 => '+',
+      0 => {
+        0 => {
+          0 => '-',
+          1 => {
+            0 => {
+              0 => '[',
+              1 => {
+                0 => '.',
+                1 => {
+                  0 => ','
+                }
+              }
+            },
+            1 => ']'
+          }
+        },
+        1 => {
+          0 => '>',
+          1 => '<'
+        }
+      }
     }
   }
 
@@ -27,7 +51,7 @@ class BrainFuck
     @debug               = debug
     @execution_count     = 0
 
-    @instruction_pointer = 0
+    @instruction_pointer = -1
     @memory              = Array.new(MEMORY_SIZE){ 0 }
     @data_pointer        = 0
     @pointer_stack       = []
@@ -86,17 +110,47 @@ class BrainFuck
     bf
   end
 
+  def self.bf_to_ook(bf)
+    ook = ''
+    ook_bf = DIALECTS[:ook].invert
+    bf.each_char do |op|
+        next unless op.match(/[\>\<\+\-\.,\[\]]/)
+        ook << ook_bf[op]
+        ook << ' '
+    end
+    ook
+  end
+
+  def self.spoon_to_bf(spoon)
+    src = spoon.gsub(/[^01]/, '')
+    bf = ''
+    current = DIALECTS[:spoon]
+    spoon.each_char do |i|
+      current = current[i.to_i]
+      unless current.is_a?(Hash)
+        bf << current
+        current = DIALECTS[:spoon]
+      end
+    end
+    bf
+  end
+
   def run
     @program = get_program
     @program_end = @program.size
 
     while !ended? do
       dump if @debug
-      op = @program[@instruction_pointer]
+      op = next_instruction
+      puts "op = #{op}" if @debug
       execute(op)
       dump if @debug
-      @instruction_pointer += 1
     end
+  end
+
+  def next_instruction
+    @instruction_pointer += 1
+    @program[@instruction_pointer]
   end
 
   def ended?
@@ -115,13 +169,14 @@ class BrainFuck
   private
 
   def get_program
-    program = ''
-    @input_stream.each do |line|
-      if line.match(/(Ook[\.\?\!]\s*){2}/) # Probably Ook
-        program << ook_to_bf(line)
-      else
-        program << line.gsub(/[^\>\<\+\-\.,\[\]]/, '')
-      end
+    src = @input_stream.read
+    if src.match(/(Ook[\.\?\!]\s*){2}/) # Probably Ook
+      src = src.gsub(/[\r\n]/, ' ')
+      program = BrainFuck.ook_to_bf(src)
+    elsif src.match(/^[01]+\s*$/m) # Probably Spoon
+      program = BrainFuck.spoon_to_bf(src)
+    else
+      program = src.gsub(/[^\>\<\+\-\.,\[\]]/, '')
     end
     program
   end
@@ -135,11 +190,6 @@ class BrainFuck
       end
     end until @program[pointer] == ']'
     pointer
-  end
-
-  if __FILE__ == $PROGRAM_NAME
-    bf = BrainFuck.new(ARGF)
-    bf.run
   end
 
 end
