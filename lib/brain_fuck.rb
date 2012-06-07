@@ -47,7 +47,6 @@ class BrainFuck
                 :pointer_stack
 
   def initialize(input_stream, debug=false)
-    @input_stream        = input_stream
     @debug               = debug
     @execution_count     = 0
 
@@ -55,6 +54,9 @@ class BrainFuck
     @memory              = Array.new(MEMORY_SIZE){ 0 }
     @data_pointer        = 0
     @pointer_stack       = []
+
+    @program = get_program(input_stream)
+    @program_end = @program.size
   end
 
   def execute(op)
@@ -136,9 +138,6 @@ class BrainFuck
   end
 
   def run
-    @program = get_program
-    @program_end = @program.size
-
     while !ended? do
       dump if @debug
       op = next_instruction
@@ -154,7 +153,8 @@ class BrainFuck
   end
 
   def ended?
-    (@instruction_pointer >= @program_end or @execution_count >= LIMIT)
+    (@instruction_pointer >= @program_end or
+     @execution_count >= LIMIT)
   end
 
   def dump
@@ -168,8 +168,8 @@ class BrainFuck
 
   private
 
-  def get_program
-    src = @input_stream.read
+  def get_program(input_stream)
+    src = input_stream.read
     if src.match(/(Ook[\.\?\!]\s*){2}/) # Probably Ook
       src = src.gsub(/[\r\n]/, ' ')
       program = BrainFuck.ook_to_bf(src)

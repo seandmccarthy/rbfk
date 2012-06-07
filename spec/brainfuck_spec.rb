@@ -1,9 +1,9 @@
-require File.expand_path(File.join('..', '..', 'lib', 'BrainFuck.rb'), __FILE__)
+require File.expand_path(File.join('..', '..', 'lib', 'brain_fuck'), __FILE__)
 
 describe BrainFuck do
-  describe "The Brain Fuck instrument set" do
+  describe "The Brain Fuck instruction set" do
     before :each do
-      @bf = BrainFuck.new(nil)
+      @bf = BrainFuck.new(StringIO.new(''))
     end
 
     it "should increment the value at the current memory location" do
@@ -31,10 +31,15 @@ describe BrainFuck do
     end
 
     it "should read a char into the current memory location" do
-      pending
+      STDIN.should_receive(:getc).and_return('A')
+      @bf.execute(',')
+      @bf.memory[0].should == 65
     end
 
     it "output the value at the current memory location" do
+      @bf.memory[0] = 65
+      STDOUT.should_receive(:putc).with(65)
+      @bf.execute('.')
     end
 
     describe "loops" do
@@ -52,12 +57,12 @@ describe BrainFuck do
       end
 
       it "should begin a new iteration when the current memory value is > 0" do
-        pending
 
         # Increment current memory position
         @bf.execute('+')
 
         # Start loop
+        @bf.instruction_pointer = 1
         @bf.execute('[')
 
         # The pointer stack should have (instruction_pointer - 1) pushed on
@@ -72,12 +77,12 @@ describe BrainFuck do
       end
 
       it "should finish iterating when the current memory value is = 0" do
-        pending
 
         # Increment current memory position
         @bf.execute('+')
 
         # Start loop
+        @bf.instruction_pointer = 1
         @bf.execute('[')
 
         # The pointer stack should have (instruction_pointer - 1) pushed on
@@ -89,31 +94,29 @@ describe BrainFuck do
         # End of loop, should notice memory position is zero, then
         #  - pop the last value from pointer_stack
         #  - instruction_pointer should (remain) at index for ']' in @program
+        @bf.instruction_pointer = 3
         @bf.execute(']')
         @bf.pointer_stack.should == []
         @bf.instruction_pointer.should == 3
       end
 
       it "should permit nested loops" do
+        pending
       end
 
       it "should raise an exception for mismatched braces" do
+        lambda { @bf.execute(']') }.should raise_error
       end
-    end
-
-    describe "instruction pointer" do
-      pending
     end
 
   end
 
   describe "running programs" do
-    it "should run a given program" do
-      pending
-    end
-
     it "should indicate when a program execution should end" do
-      pending
+      @bf = BrainFuck.new(StringIO.new(''))
+      @bf.ended?.should be_false
+      @bf.next_instruction
+      @bf.ended?.should be_true
     end
   end
 
