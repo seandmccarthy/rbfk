@@ -17,9 +17,7 @@ describe BrainFuck do
     end
 
     it "should increment the data pointer" do
-      @bf.dump
       @bf.execute('>')
-      @bf.dump
       @bf.data_pointer.should == 1
     end
 

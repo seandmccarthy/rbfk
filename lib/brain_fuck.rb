@@ -1,8 +1,19 @@
 #!/usr/bin/env ruby -w
 
 class BrainFuck
-  MEMORY_SIZE = 30_000
-  LIMIT       = 1_000_000 # Stop badly constructed scripts going forever
+  DEFAULT_MEMORY_SIZE = 30_000
+  DEFAULT_EXEC_LIMIT  = 1_000_000 # Stop badly constructed scripts going forever
+
+  OPS = {
+    '+' => :increment,
+    '-' => :decrement,
+    '>' => :move_pointer_left,
+    '<' => :move_pointer_right,
+    ',' => :read_in,
+    '.' => :print_out,
+    '[' => :loop_start,
+    ']' => :loop_end
+  }
 
   DIALECTS = {
     :ook => {
@@ -46,58 +57,79 @@ class BrainFuck
                 :instruction_pointer,
                 :pointer_stack
 
-  def initialize(input_stream, debug=false)
-    @debug               = debug
+  def initialize(program_input_stream, options={})
+    @debug               = options[:debug] || false
+    @exec_limit          = options[:execution_limit] || DEFAULT_EXEC_LIMIT
     @execution_count     = 0
 
     @instruction_pointer = -1
-    @memory              = Array.new(MEMORY_SIZE){ 0 }
+    @memory_size         = options[:memory_size] || DEFAULT_MEMORY_SIZE
+    @memory              = Array.new(@memory_size){ 0 }
     @data_pointer        = 0
     @pointer_stack       = []
 
-    @program = get_program(input_stream)
-    @program_end = @program.size
+    @input_stream        = options[:input_stream] || STDIN
+    @output_stream       = options[:output_stream] || STDOUT
+
+    @program             = get_program(program_input_stream)
+    @program_end         = @program.size
   end
 
   def execute(op)
+    return unless OPS.has_key?(op)
     puts op if @debug
-    case op
-    when '>'
-      @data_pointer += 1
-    when '<'
-      if @data_pointer > 0
-        @data_pointer -= 1
-      else
-        @data_pointer = MEMORY_SIZE - 1
-      end
-    when '+'
-      @memory[@data_pointer] += 1
-      if @data_pointer == MEMORY_SIZE
-        @data_pointer = 0
-      end
-    when '-'
-      @memory[@data_pointer] -= 1
-    when '.'
-      putc @memory[@data_pointer]
-    when ',' 
-      @memory[@data_pointer] = STDIN.getc.ord
-    when '['
-      if @memory[@data_pointer] > 0
-        @pointer_stack.push(@instruction_pointer-1)
-      else
-        @instruction_pointer = matching_brace_position(@instruction_pointer)
-      end
-    when ']'
-      if @pointer_stack.empty?
-        raise "Bracket mismatch"
-      end
-      if @memory[@data_pointer] == 0
-        @pointer_stack.pop
-      else
-        @instruction_pointer = @pointer_stack.pop
-      end
-    end
+    send(OPS[op])
     @execution_count += 1
+  end
+
+  def increment
+    @memory[@data_pointer] += 1
+  end
+
+  def decrement
+    @memory[@data_pointer] -= 1
+  end
+
+  def read_in
+    @memory[@data_pointer] = @input_stream.getc.ord
+  end
+
+  def print_out
+    @output_stream.putc @memory[@data_pointer]
+  end
+
+  def move_pointer_left
+    @data_pointer += 1
+    if @data_pointer == @memory_size
+      @data_pointer = 0
+    end
+  end
+
+  def move_pointer_right
+    if @data_pointer > 0
+      @data_pointer -= 1
+    else
+      @data_pointer = @memory_size - 1
+    end
+  end
+
+  def loop_start
+    if @memory[@data_pointer] > 0
+      @pointer_stack.push(@instruction_pointer-1)
+    else
+      @instruction_pointer = matching_brace_position(@instruction_pointer)
+    end
+  end
+
+  def loop_end
+    if @pointer_stack.empty?
+      raise "Bracket mismatch"
+    end
+    if @memory[@data_pointer] == 0
+      @pointer_stack.pop
+    else
+      @instruction_pointer = @pointer_stack.pop
+    end
   end
 
   def self.ook_to_bf(ook)
@@ -116,9 +148,9 @@ class BrainFuck
     ook = ''
     ook_bf = DIALECTS[:ook].invert
     bf.each_char do |op|
-        next unless op.match(/[\>\<\+\-\.,\[\]]/)
-        ook << ook_bf[op]
-        ook << ' '
+      next unless op.match(/[\>\<\+\-\.,\[\]]/)
+      ook << ook_bf[op]
+      ook << ' '
     end
     ook
   end
@@ -138,7 +170,7 @@ class BrainFuck
   end
 
   def run
-    while !ended? do
+    while not ended? do
       dump if @debug
       op = next_instruction
       puts "op = #{op}" if @debug
@@ -154,7 +186,7 @@ class BrainFuck
 
   def ended?
     (@instruction_pointer >= @program_end or
-     @execution_count >= LIMIT)
+     @execution_count >= @exec_limit)
   end
 
   def dump
@@ -168,8 +200,8 @@ class BrainFuck
 
   private
 
-  def get_program(input_stream)
-    src = input_stream.read
+  def get_program(program_input_stream)
+    src = program_input_stream.read
     if src.match(/(Ook[\.\?\!]\s*){2}/) # Probably Ook
       src = src.gsub(/[\r\n]/, ' ')
       program = BrainFuck.ook_to_bf(src)

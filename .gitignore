@@ -1,0 +1,6 @@
+rdoc
+doc
+.bundle
+pkg
+.DS_Store
+*.swp

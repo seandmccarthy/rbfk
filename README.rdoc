@@ -1,0 +1,43 @@
+== Brainfuck, in Ruby.
+
+See http://en.wikipedia.org/wiki/Brainfuck
+
+== Usage
+
+    rbfk.rb <brainfuck source file>
+
+OR
+
+    echo '++++++[>++++++++++<-]+++++.' | rbfk.rb
+
+although piping in a script this way that uses the "," operation won't work, 
+since the "," operation reads from STDIN.
+
+Also supports Ook![http://esolangs.org/wiki/Ook!] and Spoon[http://esolangs.org/wiki/Spoon] scripts.
+
+You can use the BrainFuck class in your own programs (why?) like so:
+
+    require 'brain_fuck'
+    
+    program = File.open('test.bf', 'r')
+    #
+    # OR any IO stream, e.g.
+    # program = StringIO.new('++++++[>++++++++++<-]+++++.')
+    #
+    bf = BrainFuck.new(program)
+    bf.run
+
+=== Options
+
+    options = { :memory_size => 50_000 }
+    bf = BrainFuck.new(program, options)
+    bf.run
+
+Where options is a hash with one or more of the following options:
+
+[:debug] will emit debugging information to STDOUT
+[:execution_limit] the maximum operations to execute (including repetition in loops) before forced termination (to prevent runaway scripts). Defaults to 1,000,000.
+[:memory_size] the size of the "tape" (the array) size used for the BrainFuck machine's memory. Defaults to 30,000.
+[:input_stream] the IO stream from which the "," operation reads
+[:output_stream] the IO stream to which the "." operation will write
+
