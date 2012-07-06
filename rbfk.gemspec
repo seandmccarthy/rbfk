@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
     "bin/bf2ook",
     "bin/rbfk",
     "lib/brain_fuck.rb",
+    "rbfk.gemspec",
     "samples/a.bf",
     "samples/get_put.bf",
     "samples/hello_world.bf",
