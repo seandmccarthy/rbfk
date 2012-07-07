@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rbfk}
-  s.version = "1.0.0"
+  s.version = "1.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Sean McCarthy}]
-  s.date = %q{2012-07-06}
-  s.description = %q{An interpreter for BrainFuck that also be embedded in your programs}
+  s.date = %q{2012-07-07}
+  s.description = %q{An interpreter for BrainFuck that can also be embedded in your programs}
   s.email = %q{sean@clanmcccarthy.net}
   s.executables = [%q{bf2ook}, %q{rbfk}]
   s.extra_rdoc_files = [
