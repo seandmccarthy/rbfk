@@ -22,7 +22,8 @@ You can use the BrainFuck class in your own programs (why?) like so:
     program = File.open('test.bf', 'r')
     #
     # OR any IO stream, e.g.
-    # program = StringIO.new('++++++[>++++++++++<-]+++++.')
+    # require 'stringio'
+    # program = StringIO.new('++++++[>++++++++++<-]>+++++.')
     #
     bf = BrainFuck.new(program)
     bf.run

@@ -10,7 +10,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/seandmccarthy/rbfk"
   gem.license = "MIT"
   gem.summary = %Q{BrainFuck interpreter}
-  gem.description = %Q{An interpreter for BrainFuck that also be embedded in your programs}
+  gem.description = %Q{An interpreter for BrainFuck that can also be embedded in your programs}
   gem.email = "sean@clanmcccarthy.net"
   gem.authors = ["Sean McCarthy"]
   gem.add_development_dependency "rspec", "~> 2.8.0"
