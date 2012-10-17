@@ -4,15 +4,15 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{rbfk}
-  s.version = "1.0.1"
+  s.name = "rbfk"
+  s.version = "1.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = [%q{Sean McCarthy}]
-  s.date = %q{2012-07-07}
-  s.description = %q{An interpreter for BrainFuck that can also be embedded in your programs}
-  s.email = %q{sean@clanmcccarthy.net}
-  s.executables = [%q{bf2ook}, %q{rbfk}]
+  s.authors = ["Sean McCarthy"]
+  s.date = "2012-10-17"
+  s.description = "An interpreter for BrainFuck that can also be embedded in your programs"
+  s.email = "sean@clanmcccarthy.net"
+  s.executables = ["bf2ook", "rbfk"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -37,11 +37,11 @@ Gem::Specification.new do |s|
     "samples/text2bf.bf",
     "spec/brainfuck_spec.rb"
   ]
-  s.homepage = %q{http://github.com/seandmccarthy/rbfk}
-  s.licenses = [%q{MIT}]
-  s.require_paths = [%q{lib}]
-  s.rubygems_version = %q{1.8.5}
-  s.summary = %q{BrainFuck interpreter}
+  s.homepage = "http://github.com/seandmccarthy/rbfk"
+  s.licenses = ["MIT"]
+  s.require_paths = ["lib"]
+  s.rubygems_version = "1.8.24"
+  s.summary = "BrainFuck interpreter"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
