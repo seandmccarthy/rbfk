@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require File.expand_path(File.join('..', '..', 'lib', 'BrainFuck'), __FILE__)
+require File.expand_path(File.join('..', '..', 'lib', 'brain_fuck'), __FILE__)
 
 bf = BrainFuck.new(ARGF)
 bf.run
