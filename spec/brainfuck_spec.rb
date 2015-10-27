@@ -119,9 +119,16 @@ describe BrainFuck do
   end
 
   describe "Translating and executing other dialects" do
-    pending
-    #self.ook_to_bf(ook)
-    #self.bf_to_ook(bf)
-    #self.spoon_to_bf(spoon)
+    it 'translates ook to brainfuck' do
+      BrainFuck.ook_to_bf('Ook. Ook.').should == '+'
+    end
+
+    it 'translate brainfuck to Ook' do
+      BrainFuck.bf_to_ook('-').should == 'Ook! Ook!'
+    end
+
+    it 'translates Spoon to Brainfuck' do
+      BrainFuck.spoon_to_bf('010').should == '>'
+    end
   end
 end
