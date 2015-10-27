@@ -133,7 +133,7 @@ class BrainFuck
   end
 
   def self.ook_to_bf(ook)
-    bf = ''
+    bf = []
     ook.scan(/(Ook[\.\?\!])\s*(Ook[\.\?\!])/) do |m|
       command = "#{m[0]} #{m[1]}"
       unless DIALECTS[:ook].include?(command)
@@ -141,23 +141,22 @@ class BrainFuck
       end
       bf << DIALECTS[:ook][command]
     end
-    bf
+    bf.join
   end
 
   def self.bf_to_ook(bf)
-    ook = ''
+    ook = []
     ook_bf = DIALECTS[:ook].invert
     bf.each_char do |op|
       next unless op.match(/[\>\<\+\-\.,\[\]]/)
       ook << ook_bf[op]
-      ook << ' '
     end
-    ook
+    ook.join(' ')
   end
 
   def self.spoon_to_bf(spoon)
     src = spoon.gsub(/[^01]/, '')
-    bf = ''
+    bf = []
     current = DIALECTS[:spoon]
     spoon.each_char do |i|
       current = current[i.to_i]
@@ -166,7 +165,7 @@ class BrainFuck
         current = DIALECTS[:spoon]
       end
     end
-    bf
+    bf.join
   end
 
   def run
@@ -202,21 +201,31 @@ class BrainFuck
 
   def get_program(program_input_stream)
     src = program_input_stream.read
-    if src.match(/(Ook[\.\?\!]\s*){2}/) # Probably Ook
-      src = src.gsub(/[\r\n]/, ' ')
-      program = BrainFuck.ook_to_bf(src)
-    elsif src.match(/^[01]+\s*$/m) # Probably Spoon
-      program = BrainFuck.spoon_to_bf(src)
+    if ook?(src) # Probably Ook
+      BrainFuck.ook_to_bf(src) #.gsub(/[\r\n]/, ' '))
+    elsif spoon?(src) # Probably Spoon
+      BrainFuck.spoon_to_bf(src)
     else
-      program = src.gsub(/[^\>\<\+\-\.,\[\]]/, '')
+      clean_source(src)
     end
-    program
+  end
+
+  def clean_source(src)
+    src.gsub(/[^\>\<\+\-\.,\[\]]/, '')
+  end
+
+  def ook?(src)
+    src.match(/(Ook[\.\?\!]\s*){2}/)
+  end
+
+  def spoon?(src)
+    src.match(/^[01]+\s*$/m)
   end
 
   def matching_brace_position(pointer)
     begin
       pointer += 1
-      raise "Bracket mismatch" if pointer >= @program_end
+      fail "Bracket mismatch" if pointer >= @program_end
       if @program[pointer] == '['
         pointer = matching_brace_position(pointer) + 1
       end
