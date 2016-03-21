@@ -8,50 +8,53 @@ describe BrainFuck do
 
     it "should increment the value at the current memory location" do
       @bf.execute('+')
-      @bf.memory[0].should == 1
+      expect(@bf.memory[0]).to eq 1
     end
 
     it "should decrement the value at the current memory location" do
       @bf.execute('-')
-      @bf.memory[0].should == -1
+      expect(@bf.memory[0]).to eq -1
     end
 
     it "should increment the data pointer" do
       @bf.execute('>')
-      @bf.data_pointer.should == 1
+      expect(@bf.data_pointer).to eq 1
     end
 
     it "should decrement the data pointer" do
       @bf.execute('>')
-      @bf.data_pointer.should == 1
+      expect(@bf.data_pointer).to eq 1
       @bf.execute('<')
-      @bf.data_pointer.should == 0
+      expect(@bf.data_pointer).to eq 0
     end
 
     it "should read a char into the current memory location" do
-      STDIN.should_receive(:getc).and_return('A')
-      @bf.execute(',')
-      @bf.memory[0].should == 65
+      bf = BrainFuck.new(StringIO.new(''), input_stream: StringIO.new('A'))
+      bf.execute(',')
+      expect(bf.memory[0]).to eq 65
     end
 
     it "output the value at the current memory location" do
-      @bf.memory[0] = 65
-      STDOUT.should_receive(:putc).with(65)
-      @bf.execute('.')
+      output = StringIO.new
+      bf = BrainFuck.new(StringIO.new(''), output_stream: output)
+      bf.memory[0] = 65
+      bf.execute('.')
+      output.seek(0)
+      expect(output.read).to eq 'A'
     end
 
     describe "loops" do
       it "should begin a loop when the current memory value is > 0" do
         @bf.execute('+')
         @bf.execute('[')
-        @bf.pointer_stack.should_not be_empty
+        expect(@bf.pointer_stack).to_not be_empty
       end
 
       it "should skip the loop when the current memory value is = 0" do
-        @bf.should_receive(:matching_brace_position).and_return(1)
+        expect(@bf).to receive(:matching_brace_position).and_return(1)
         @bf.execute('[')
-        @bf.pointer_stack.should == []
-        @bf.instruction_pointer.should == 1
+        expect(@bf.pointer_stack).to eq []
+        expect(@bf.instruction_pointer).to eq 1
       end
 
       it "should begin a new iteration when the current memory value is > 0" do
@@ -64,18 +67,17 @@ describe BrainFuck do
         @bf.execute('[')
 
         # The pointer stack should have (instruction_pointer - 1) pushed on
-        @bf.pointer_stack.should == [0]
+        expect(@bf.pointer_stack).to eq [0]
 
         # End of loop, should see memory position > zero, then
         #  - pop the last value from pointer_stack
         #  - instruction_pointer should be set to this value
         @bf.execute(']')
-        @bf.pointer_stack.should == []
-        @bf.instruction_pointer.should == 0
+        expect(@bf.pointer_stack).to eq []
+        expect(@bf.instruction_pointer).to eq 0
       end
 
       it "should finish iterating when the current memory value is = 0" do
-
         # Increment current memory position
         @bf.execute('+')
 
@@ -84,7 +86,7 @@ describe BrainFuck do
         @bf.execute('[')
 
         # The pointer stack should have (instruction_pointer - 1) pushed on
-        @bf.pointer_stack.should == [0]
+        expect(@bf.pointer_stack).to eq [0]
 
         # Decrement current memory position, making it zero
         @bf.execute('-')
@@ -94,15 +96,15 @@ describe BrainFuck do
         #  - instruction_pointer should (remain) at index for ']' in @program
         @bf.instruction_pointer = 3
         @bf.execute(']')
-        @bf.pointer_stack.should == []
-        @bf.instruction_pointer.should == 3
+        expect(@bf.pointer_stack).to eq []
+        expect(@bf.instruction_pointer).to eq 3
       end
 
       it "should permit nested loops" do
       end
 
       it "should raise an exception for mismatched braces" do
-        lambda { @bf.execute(']') }.should raise_error
+        expect { @bf.execute(']') }.to raise_error 'Bracket mismatch'
       end
     end
 
@@ -119,7 +121,7 @@ describe BrainFuck do
 
   describe "Translating and executing other dialects" do
     it 'translate brainfuck to Ook' do
-      BrainFuck.bf_to_ook('-').should == 'Ook! Ook!'
+      expect(BrainFuck.bf_to_ook('-')).to eq 'Ook! Ook!'
     end
   end
 end
