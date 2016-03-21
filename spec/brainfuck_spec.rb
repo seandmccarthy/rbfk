@@ -99,7 +99,6 @@ describe BrainFuck do
       end
 
       it "should permit nested loops" do
-        pending
       end
 
       it "should raise an exception for mismatched braces" do
@@ -112,23 +111,15 @@ describe BrainFuck do
   describe "running programs" do
     it "should indicate when a program execution should end" do
       @bf = BrainFuck.new(StringIO.new(''))
-      @bf.ended?.should be_false
+      expect(@bf.ended?).to be false
       @bf.next_instruction
-      @bf.ended?.should be_true
+      expect(@bf.ended?).to be true
     end
   end
 
   describe "Translating and executing other dialects" do
-    it 'translates ook to brainfuck' do
-      BrainFuck.ook_to_bf('Ook. Ook.').should == '+'
-    end
-
     it 'translate brainfuck to Ook' do
       BrainFuck.bf_to_ook('-').should == 'Ook! Ook!'
-    end
-
-    it 'translates Spoon to Brainfuck' do
-      BrainFuck.spoon_to_bf('010').should == '>'
     end
   end
 end
