@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-#require 'rbfk/version'
+require 'brainfuck/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "rbfk"
-  spec.version       = "1.2.0" #Rbfk::VERSION
+  spec.version       = Brainfuck::VERSION
   spec.authors       = ["Sean McCarthy"]
   spec.email         = ["sean@clanmccarthy.net"]
   spec.summary       = %q{BrainFuck interpreter.}
